@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import FastAPI
 
-from imoveis_api.schemas import Message, UserSchema, UserPublic
+from imoveis_api.schemas import Message, UserPublic, UserSchema
 
 app = FastAPI()
 
