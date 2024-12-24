@@ -2,7 +2,7 @@ services:
   imoveis_database:
     image: postgres:17.2-alpine
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgresdata:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -31,6 +31,6 @@ services:
       - imoveis_database
     environment:
       DATABASE_URL: ${DATABASE_URL}
-      
+
 volumes:
-  pgdata:
+  postgresdata:
