@@ -13,7 +13,7 @@ app = FastAPI()
 
 @app.get('/', status_code=HTTPStatus.OK, response_model=Message)
 def read_root():
-    return {'message': 'Olá, mundo!'}
+    return {'message': 'Olá mundo!'}
 
 
 # Endpoint para criar user
