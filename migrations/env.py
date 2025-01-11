@@ -3,11 +3,21 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
+<<<<<<< HEAD
 from imoveis_api.models import Base
 from imoveis_api.settings import Settings
 
 from alembic import context
 
+=======
+from alembic import context
+
+from imoveis_api.models import Base
+from imoveis_api.settings import Settings
+
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+>>>>>>> head
 config = context.config
 config.set_main_option('sqlalchemy.url', Settings().DATABASE_URL)
 
