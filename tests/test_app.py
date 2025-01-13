@@ -12,13 +12,13 @@ def test_create_user(client):
     response = client.post(
         '/users',
         json={
-            'username': 'Matheus',
+            'username': 'matheus',
             'email': 'matheus@email.com',
             'password': '123456',
         },
     )
     assert response.status_code == HTTPStatus.CREATED
     assert response.json() == {
-        'username': 'Matheus',
+        'username': 'matheus',
         'email': 'matheus@email.com',
     }
