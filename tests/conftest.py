@@ -6,7 +6,7 @@ from sqlalchemy.pool import StaticPool
 
 from imoveis_api.app import app
 from imoveis_api.database import get_session
-from imoveis_api.models import Base
+from imoveis_api.models import Base, User
 
 
 @pytest.fixture
@@ -34,3 +34,13 @@ def session():
         yield session
 
     Base.metadata.drop_all(engine)
+
+
+@pytest.fixture
+def user(session):
+    user = User(username='Teste', email='teste@test.com', password='testtest')
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    return user
