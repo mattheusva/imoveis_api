@@ -20,6 +20,32 @@ def test_create_user(client):
     }
 
 
+def test_create_user_should_return_400_username_exists(client, user):
+    response = client.post(
+        '/users',
+        json={
+            'username': user.username,
+            'email': 'teste@test.com',
+            'password': 'testtest',
+        },
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {'detail': 'Username already exists'}
+
+
+def test_create_user_should_return_400_email_exists(client, user):
+    response = client.post(
+        '/users',
+        json={
+            'username': 'Alice',
+            'email': user.email,
+            'password': 'testtest',
+        },
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {'detail': 'Email already exists'}
+
+
 def test_read_users(client):
     response = client.get('/users/')
     assert response.status_code == HTTPStatus.OK
@@ -47,6 +73,19 @@ def test_update_user(client, user):
         'email': 'bob@example.com',
         'id': 1,
     }
+
+
+def test_update_user_should_return_not_found(client):
+    response = client.put(
+        '/users/666',
+        json={
+            'username': 'bob',
+            'email': 'bob@example.com',
+            'password': 'mynewpassword',
+        },
+    )
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'User not found'}
 
 
 def test_update_integrity_error(client, user):
@@ -78,3 +117,9 @@ def test_delete_user(client, user):
     response = client.delete('/users/1')
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'message': 'User deleted'}
+
+
+def test_delete_user_should_return_not_found(client):
+    response = client.delete('/users/666')
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'User not found'}
