@@ -18,7 +18,7 @@ class Property(Base):
     __tablename__ = 'properties'
     id = Column(Integer, primary_key=True)
     type = Column(String)
-    size = Column(String)
+    area = Column(Float)
     rooms = Column(Integer)
     bathrooms = Column(Integer)
     garages = Column(Integer)
@@ -28,3 +28,4 @@ class Property(Base):
     city = Column(String)
     state = Column(String)
     status = Column(String)
+    created_at = Column(DateTime, server_default=func.now())
