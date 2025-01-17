@@ -23,6 +23,7 @@ class Property(Base):
     bathrooms = Column(Integer)
     garages = Column(Integer)
     value = Column(Float)
+    transaction = Column(String)
     description = Column(String)
     address = Column(String)
     city = Column(String)

@@ -31,6 +31,7 @@ class PropertySchema(BaseModel):
     bathrooms: int
     garages: int
     value: float
+    transaction: str
     description: Optional[str]
     address: str
     city: str
