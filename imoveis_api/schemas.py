@@ -1,6 +1,6 @@
-from pydantic import BaseModel, ConfigDict, EmailStr
 from typing import Optional
-from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class Message(BaseModel):
@@ -27,7 +27,7 @@ class UserList(BaseModel):
 class PropertySchema(BaseModel):
     type: str
     area: float
-    rooms: int 
+    rooms: int
     bathrooms: int
     garages: int
     value: float
@@ -41,7 +41,6 @@ class PropertySchema(BaseModel):
 
 class PropertyPublic(PropertySchema):
     id: int
-    created_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
 

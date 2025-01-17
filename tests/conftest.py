@@ -6,7 +6,7 @@ from sqlalchemy.pool import StaticPool
 
 from imoveis_api.app import app
 from imoveis_api.database import get_session
-from imoveis_api.models import Base, User
+from imoveis_api.models import Base, Property, User
 
 
 @pytest.fixture
@@ -44,3 +44,26 @@ def user(session):
     session.refresh(user)
 
     return user
+
+
+@pytest.fixture
+def property(session):
+    property = Property(
+        type='teste',
+        area=120.0,
+        rooms=4,
+        bathrooms=2,
+        garages=1,
+        value=500000.0,
+        transaction='aluguel',
+        description='Boa localização',
+        address='Rua teste',
+        city='São Paulo',
+        state='SP',
+        status='Disponível',
+    )
+    session.add(property)
+    session.commit()
+    session.refresh(property)
+
+    return property
