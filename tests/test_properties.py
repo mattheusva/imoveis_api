@@ -87,7 +87,35 @@ def test_update_property(client, property):
     }
 
 
+def test_update_property_should_return_not_found(client):
+    response = client.put(
+        '/properties/666',
+        json={
+            'type': 'Casa',
+            'area': 80.0,
+            'rooms': 2,
+            'bathrooms': 1,
+            'garages': 2,
+            'value': 450000.0,
+            'transaction': 'aluguel',
+            'description': 'Boa localização.',
+            'address': 'Rua Teste, 123',
+            'city': 'Porto Alegre',
+            'state': 'RS',
+            'status': 'Indisponivel',
+        },
+    )
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'Property not found'}
+
+
 def test_delete_property(client, property):
     response = client.delete('/properties/1')
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'message': 'Property deleted'}
+
+
+def test_delete_property_should_return_not_found(client):
+    response = client.delete('/properties/666')
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'Property not found'}
