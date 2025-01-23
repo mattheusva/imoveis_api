@@ -10,7 +10,7 @@ def test_create_user(client):
             'username': 'matheus',
             'email': 'matheus@email.com',
             'password': '123456',
-            'phone': '+5551999999999',
+            'phone': '+55 51 99999-9999',
             'CRECI': '999999',
         },
     )
