@@ -10,7 +10,7 @@ def test_create_user(client):
             'username': 'matheus',
             'email': 'matheus@email.com',
             'password': '123456',
-            'phone': '55 51 99999-9999',
+            'phone': '+5551999999999',
             'CRECI': '999999',
         },
     )
@@ -18,7 +18,7 @@ def test_create_user(client):
     assert response.json() == {
         'username': 'matheus',
         'email': 'matheus@email.com',
-        'phone': '55 51 99999-9999',
+        'phone': '+5551999999999',
         'CRECI': '999999',
         'id': 1,
     }
@@ -69,7 +69,7 @@ def test_update_user(client, user):
             'username': 'bob',
             'email': 'bob@example.com',
             'password': 'mynewpassword',
-            'phone': '55 11 91234-5678',
+            'phone': '+5511912345678',
             'CRECI': '666666',
         },
     )
@@ -77,7 +77,7 @@ def test_update_user(client, user):
     assert response.json() == {
         'username': 'bob',
         'email': 'bob@example.com',
-        'phone': '55 11 91234-5678',
+        'phone': '+5511912345678',
         'CRECI': '666666',
         'id': 1,
     }

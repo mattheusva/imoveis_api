@@ -1,6 +1,7 @@
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+import phonenumbers
+from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
 
 
 class Message(BaseModel):
@@ -13,6 +14,20 @@ class UserSchema(BaseModel):
     password: str
     phone: Optional[str] = None
     CRECI: Optional[str] = None
+
+    @field_validator('phone')
+    def validate_phone(cls, value):
+        if value is None:
+            return value
+        try:
+            phone_obj = phonenumbers.parse(value)
+            if not phonenumbers.is_valid_number(phone_obj):
+                raise ValueError('Invalid phone number')
+            return phonenumbers.format_number(
+                phone_obj, phonenumbers.PhoneNumberFormat.E164
+            )
+        except phonenumbers.NumberParseException:
+            raise ValueError('Invalid phone number')
 
 
 class UserPublic(BaseModel):
