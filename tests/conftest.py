@@ -38,7 +38,13 @@ def session():
 
 @pytest.fixture
 def user(session):
-    user = User(username='Teste', email='teste@test.com', password='testtest')
+    user = User(
+        username='Teste',
+        email='teste@test.com',
+        password='testtest',
+        phone='55 51 99999-9999',
+        CRECI='999999',
+    )
     session.add(user)
     session.commit()
     session.refresh(user)

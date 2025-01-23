@@ -11,12 +11,16 @@ class UserSchema(BaseModel):
     username: str
     email: EmailStr
     password: str
+    phone: Optional[str] = None
+    CRECI: Optional[str] = None
 
 
 class UserPublic(BaseModel):
     id: int
     username: str
     email: EmailStr
+    phone: Optional[str] = None
+    CRECI: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 

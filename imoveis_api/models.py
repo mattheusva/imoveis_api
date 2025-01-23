@@ -11,11 +11,14 @@ class User(Base):
     username = Column(String, unique=True)
     password = Column(String)
     email = Column(String, unique=True)
+    phone = Column(String, nullable=True)
+    CRECI = Column(String, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
 
 class Property(Base):
     __tablename__ = 'properties'
+
     id = Column(Integer, primary_key=True)
     type = Column(String)
     area = Column(Float)

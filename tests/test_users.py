@@ -10,12 +10,16 @@ def test_create_user(client):
             'username': 'matheus',
             'email': 'matheus@email.com',
             'password': '123456',
+            'phone': '55 51 99999-9999',
+            'CRECI': '999999',
         },
     )
     assert response.status_code == HTTPStatus.CREATED
     assert response.json() == {
         'username': 'matheus',
         'email': 'matheus@email.com',
+        'phone': '55 51 99999-9999',
+        'CRECI': '999999',
         'id': 1,
     }
 
@@ -65,12 +69,16 @@ def test_update_user(client, user):
             'username': 'bob',
             'email': 'bob@example.com',
             'password': 'mynewpassword',
+            'phone': '55 11 91234-5678',
+            'CRECI': '666666',
         },
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
         'username': 'bob',
         'email': 'bob@example.com',
+        'phone': '55 11 91234-5678',
+        'CRECI': '666666',
         'id': 1,
     }
 
