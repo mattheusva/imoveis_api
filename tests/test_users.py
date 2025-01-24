@@ -24,6 +24,60 @@ def test_create_user(client):
     }
 
 
+def test_create_user_without_phone_and_creci(client):
+    response = client.post(
+        '/users',
+        json={
+            'username': 'matheus',
+            'email': 'matheus@email.com',
+            'password': '123456',
+            'phone': None,
+        },
+    )
+    assert response.status_code == HTTPStatus.CREATED
+    assert response.json() == {
+        'username': 'matheus',
+        'email': 'matheus@email.com',
+        'phone': None,
+        'CRECI': None,
+        'id': 1,
+    }
+
+
+def test_create_user_with_invalid_phone_format(client):
+    response = client.post(
+        '/users',
+        json={
+            'username': 'matheus',
+            'email': 'matheus@email.com',
+            'password': '123456',
+            'phone': '+55 51 99999-99999',
+        },
+    )
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+    response_data = response.json()
+    detail = response_data['detail']
+    msg = detail[0]['msg']
+    assert msg == 'Value error, Invalid phone number'
+
+
+def test_create_user_with_invalid_phone(client):
+    response = client.post(
+        '/users',
+        json={
+            'username': 'matheus',
+            'email': 'matheus@email.com',
+            'password': '123456',
+            'phone': '12345',
+        },
+    )
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+    response_data = response.json()
+    detail = response_data['detail']
+    msg = detail[0]['msg']
+    assert msg == 'Value error, Invalid phone number'
+
+
 def test_create_user_should_return_400_username_exists(client, user):
     response = client.post(
         '/users',
