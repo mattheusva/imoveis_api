@@ -7,6 +7,7 @@ from sqlalchemy.pool import StaticPool
 from imoveis_api.app import app
 from imoveis_api.database import get_session
 from imoveis_api.models import Base, Property, User
+from imoveis_api.security import get_password_hash
 
 
 @pytest.fixture
@@ -38,16 +39,20 @@ def session():
 
 @pytest.fixture
 def user(session):
+    pwd = 'testtest'
+
     user = User(
         username='Teste',
         email='teste@test.com',
-        password='testtest',
+        password=get_password_hash(pwd),
         phone='55 51 99999-9999',
         CRECI='999999',
     )
     session.add(user)
     session.commit()
     session.refresh(user)
+
+    user.clean_password = pwd # Monkey Patch
 
     return user
 
