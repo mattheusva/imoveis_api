@@ -65,3 +65,8 @@ class PropertyPublic(PropertySchema):
 
 class PropertyList(BaseModel):
     properties: list[PropertyPublic]
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

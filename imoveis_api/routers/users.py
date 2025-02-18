@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 
 from imoveis_api.database import get_session
 from imoveis_api.models import User
-from imoveis_api.security import get_password_hash
 from imoveis_api.schemas import Message, UserList, UserPublic, UserSchema
+from imoveis_api.security import get_password_hash
 
 router = APIRouter(prefix='/users', tags=['users'])
 
@@ -33,7 +33,7 @@ def create_user(user: UserSchema, session: Session = Depends(get_session)):
                 status_code=HTTPStatus.BAD_REQUEST,
                 detail='Email already exists',
             )
-    
+
     hashed_password = get_password_hash(user.password)
 
     db_user = User(
