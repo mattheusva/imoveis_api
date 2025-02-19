@@ -52,7 +52,7 @@ def user(session):
     session.commit()
     session.refresh(user)
 
-    user.clean_password = pwd # Monkey Patch
+    user.clean_password = pwd  # Monkey Patch
 
     return user
 
