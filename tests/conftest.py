@@ -66,7 +66,6 @@ def user(session):
 
 @pytest.fixture
 def other_user(session):
-
     user = UserFactory()
 
     session.add(user)
