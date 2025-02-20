@@ -8,7 +8,11 @@ from sqlalchemy.orm import Session
 from imoveis_api.database import get_session
 from imoveis_api.models import User
 from imoveis_api.schemas import Token
-from imoveis_api.security import create_access_token, verify_password
+from imoveis_api.security import (
+    create_access_token,
+    get_current_user,
+    verify_password,
+)
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 
@@ -35,3 +39,11 @@ def login_for_access_token(
     access_token = create_access_token(data={'sub': user.email})
 
     return {'access_token': access_token, 'token_type': 'bearer'}
+
+
+@router.post('/refresh_token', response_model=Token)
+def refresh_access_token(
+    user: User = Depends(get_current_user),
+):
+    new_access_token = create_access_token(data={'sub': user.email})
+    return {'access_token': new_access_token, 'token_type': 'bearer'}
