@@ -3,9 +3,10 @@ from http import HTTPStatus
 from imoveis_api.schemas import PropertyPublic
 
 
-def test_create_property(client):
+def test_create_property(client, token):
     response = client.post(
         '/properties',
+        headers={'Authorization': f'Bearer {token}'},
         json={
             'type': 'Apartamento',
             'area': 120.0,
@@ -51,9 +52,10 @@ def test_read_properties_with_property(client, property):
     assert response.json() == {'properties': [property_schema]}
 
 
-def test_update_property(client, property):
+def test_update_property(client, property, token):
     response = client.put(
-        '/properties/1',
+        f'/properties/{property.id}',
+        headers={'Authorization': f'Bearer {token}'},
         json={
             'type': 'Casa',
             'area': 80.0,
@@ -87,9 +89,10 @@ def test_update_property(client, property):
     }
 
 
-def test_update_property_should_return_not_found(client):
+def test_update_property_should_return_not_found(client, token):
     response = client.put(
         '/properties/666',
+        headers={'Authorization': f'Bearer {token}'},
         json={
             'type': 'Casa',
             'area': 80.0,
@@ -109,13 +112,19 @@ def test_update_property_should_return_not_found(client):
     assert response.json() == {'detail': 'Property not found'}
 
 
-def test_delete_property(client, property):
-    response = client.delete('/properties/1')
+def test_delete_property(client, property, token):
+    response = client.delete(
+        f'/properties/{property.id}',
+        headers={'Authorization': f'Bearer {token}'},
+    )
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'message': 'Property deleted'}
 
 
-def test_delete_property_should_return_not_found(client):
-    response = client.delete('/properties/666')
+def test_delete_property_should_return_not_found(client, token):
+    response = client.delete(
+        '/properties/666',
+        headers={'Authorization': f'Bearer {token}'},
+    )
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json() == {'detail': 'Property not found'}

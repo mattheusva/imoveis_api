@@ -22,6 +22,24 @@ class UserFactory(factory.Factory):
     CRECI = '999999'
 
 
+class PropertyFactory(factory.Factory):
+    class Meta:
+        model = Property
+
+    type = 'teste'
+    area = 120.0
+    rooms = 4
+    bathrooms = 2
+    garages = 1
+    value = 500000.0
+    transaction = 'aluguel'
+    description = 'Boa localização'
+    address = 'Rua teste'
+    city = 'São Paulo'
+    state = 'SP'
+    status = 'Disponível'
+
+
 @pytest.fixture
 def client(session):
     def get_session_override():
@@ -77,20 +95,7 @@ def other_user(session):
 
 @pytest.fixture
 def property(session):
-    property = Property(
-        type='teste',
-        area=120.0,
-        rooms=4,
-        bathrooms=2,
-        garages=1,
-        value=500000.0,
-        transaction='aluguel',
-        description='Boa localização',
-        address='Rua teste',
-        city='São Paulo',
-        state='SP',
-        status='Disponível',
-    )
+    property = PropertyFactory()
     session.add(property)
     session.commit()
     session.refresh(property)

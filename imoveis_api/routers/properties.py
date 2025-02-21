@@ -5,13 +5,14 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from imoveis_api.database import get_session
-from imoveis_api.models import Property
+from imoveis_api.models import Property, User
 from imoveis_api.schemas import (
     Message,
     PropertyList,
     PropertyPublic,
     PropertySchema,
 )
+from imoveis_api.security import get_current_user
 
 router = APIRouter(prefix='/properties', tags=['properties'])
 
@@ -20,7 +21,9 @@ router = APIRouter(prefix='/properties', tags=['properties'])
     '/', status_code=HTTPStatus.CREATED, response_model=PropertyPublic
 )
 def create_property(
-    property: PropertySchema, session: Session = Depends(get_session)
+    property: PropertySchema,
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
 ):
     new_property = Property(**property.model_dump())
     session.add(new_property)
@@ -44,6 +47,7 @@ def read_properties(
 def update_property(
     property_id: int,
     property: PropertySchema,
+    user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ):
     db_property = session.scalar(
@@ -66,7 +70,11 @@ def update_property(
 
 
 @router.delete('/{property_id}', response_model=Message)
-def delete_property(property_id: int, session: Session = Depends(get_session)):
+def delete_property(
+    property_id: int,
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
     db_property = session.scalar(
         select(Property).where(Property.id == property_id)
     )
