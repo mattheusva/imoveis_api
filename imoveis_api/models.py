@@ -25,7 +25,7 @@ class Property(Base):
     rooms = Column(Integer)
     bathrooms = Column(Integer)
     garages = Column(Integer)
-    value = Column(Float)
+    price = Column(Float)
     transaction = Column(String)
     description = Column(String)
     address = Column(String)

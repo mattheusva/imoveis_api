@@ -31,7 +31,7 @@ class PropertyFactory(factory.Factory):
     rooms = 4
     bathrooms = 2
     garages = 1
-    value = 500000.0
+    price = 500000.0
     transaction = 'aluguel'
     description = 'Boa localização'
     address = 'Rua teste'

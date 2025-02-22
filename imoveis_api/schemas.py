@@ -49,7 +49,7 @@ class PropertySchema(BaseModel):
     rooms: int
     bathrooms: int
     garages: int
-    value: float
+    price: float
     transaction: str
     description: Optional[str]
     address: str
@@ -70,3 +70,17 @@ class PropertyList(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class FilterPage(BaseModel):
+    offset: int = 0
+    limit: int = 100
+
+
+class PropertyFilter(FilterPage):
+    state: Optional[str] = None
+    city: Optional[str] = None
+    status: Optional[str] = None
+    min_price: Optional[float] = None
+    max_price: Optional[float] = None
+    type: Optional[str] = None  # Ex: casa, apartamento

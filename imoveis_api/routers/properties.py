@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -8,6 +8,7 @@ from imoveis_api.database import get_session
 from imoveis_api.models import Property, User
 from imoveis_api.schemas import (
     Message,
+    PropertyFilter,
     PropertyList,
     PropertyPublic,
     PropertySchema,
@@ -34,12 +35,36 @@ def create_property(
 
 
 @router.get('/', response_model=PropertyList)
-def read_properties(
-    skip: int = 0, limit: int = 100, session: Session = Depends(get_session)
+def list_properties(
+    session: Session = Depends(get_session),
+    filter: PropertyFilter = Query(),
 ):
-    properties = session.scalars(
-        select(Property).offset(skip).limit(limit)
-    ).all()
+    query = select(Property)
+
+    # Filtros básicos
+    if filter.state:
+        query = query.filter(Property.state == filter.state)
+
+    if filter.city:
+        query = query.filter(Property.city.ilike(f'%{filter.city}%'))
+
+    if filter.status:
+        query = query.filter(Property.status == filter.status.value)
+
+    if filter.type:
+        query = query.filter(Property.type == filter.type)
+
+    # Faixa de preço
+    if filter.min_price is not None:
+        query = query.filter(Property.price >= filter.min_price)
+
+    if filter.max_price is not None:
+        query = query.filter(Property.price <= filter.max_price)
+
+    # Paginação
+    query = query.offset(filter.offset).limit(filter.limit)
+
+    properties = session.scalars(query).all()
     return {'properties': properties}
 
 

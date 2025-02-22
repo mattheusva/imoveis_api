@@ -13,7 +13,7 @@ def test_create_property(client, token):
             'rooms': 3,
             'bathrooms': 2,
             'garages': 1,
-            'value': 500000.0,
+            'price': 500000.0,
             'transaction': 'compra',
             'description': 'Ótima localização.',
             'address': 'Rua Exemplo, 123',
@@ -30,7 +30,7 @@ def test_create_property(client, token):
         'rooms': 3,
         'bathrooms': 2,
         'garages': 1,
-        'value': 500000.0,
+        'price': 500000.0,
         'transaction': 'compra',
         'description': 'Ótima localização.',
         'address': 'Rua Exemplo, 123',
@@ -40,13 +40,13 @@ def test_create_property(client, token):
     }
 
 
-def test_read_properties(client):
+def test_list_properties(client):
     response = client.get('/properties')
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'properties': []}
 
 
-def test_read_properties_with_property(client, property):
+def test_list_properties_with_property(client, property):
     property_schema = PropertyPublic.model_validate(property).model_dump()
     response = client.get('/properties/')
     assert response.json() == {'properties': [property_schema]}
@@ -62,7 +62,7 @@ def test_update_property(client, property, token):
             'rooms': 2,
             'bathrooms': 1,
             'garages': 2,
-            'value': 450000.0,
+            'price': 450000.0,
             'transaction': 'aluguel',
             'description': 'Boa localização.',
             'address': 'Rua Teste, 123',
@@ -79,7 +79,7 @@ def test_update_property(client, property, token):
         'rooms': 2,
         'bathrooms': 1,
         'garages': 2,
-        'value': 450000.0,
+        'price': 450000.0,
         'transaction': 'aluguel',
         'description': 'Boa localização.',
         'address': 'Rua Teste, 123',
@@ -99,7 +99,7 @@ def test_update_property_should_return_not_found(client, token):
             'rooms': 2,
             'bathrooms': 1,
             'garages': 2,
-            'value': 450000.0,
+            'price': 450000.0,
             'transaction': 'aluguel',
             'description': 'Boa localização.',
             'address': 'Rua Teste, 123',
