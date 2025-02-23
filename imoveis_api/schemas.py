@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Optional
 
 import phonenumbers
@@ -77,10 +78,15 @@ class FilterPage(BaseModel):
     limit: int = 100
 
 
+class TransactionType(str, Enum):
+    RENT = 'aluguel'
+    SALE = 'venda'
+
+
 class PropertyFilter(FilterPage):
     state: Optional[str] = None
     city: Optional[str] = None
-    status: Optional[str] = None
+    transaction: Optional[TransactionType] = None
     min_price: Optional[float] = None
     max_price: Optional[float] = None
     type: Optional[str] = None  # Ex: casa, apartamento

@@ -48,8 +48,8 @@ def list_properties(
     if filter.city:
         query = query.filter(Property.city.ilike(f'%{filter.city}%'))
 
-    if filter.status:
-        query = query.filter(Property.status == filter.status.value)
+    if filter.transaction:
+        query = query.filter(Property.transaction == filter.transaction.value)
 
     if filter.type:
         query = query.filter(Property.type == filter.type)

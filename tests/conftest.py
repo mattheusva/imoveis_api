@@ -8,6 +8,7 @@ from sqlalchemy.pool import StaticPool
 from imoveis_api.app import app
 from imoveis_api.database import get_session
 from imoveis_api.models import Base, Property, User
+from imoveis_api.schemas import TransactionType
 from imoveis_api.security import get_password_hash
 
 
@@ -26,18 +27,24 @@ class PropertyFactory(factory.Factory):
     class Meta:
         model = Property
 
-    type = 'teste'
-    area = 120.0
-    rooms = 4
-    bathrooms = 2
-    garages = 1
-    price = 500000.0
-    transaction = 'aluguel'
-    description = 'Boa localização'
-    address = 'Rua teste'
-    city = 'São Paulo'
-    state = 'SP'
-    status = 'Disponível'
+    type = factory.Faker(
+        'random_element', elements=('casa', 'apartamento', 'terreno')
+    )
+    area = factory.Faker('pyfloat', min_value=50, max_value=1000)
+    rooms = factory.Faker('random_int', min=1, max=6)
+    bathrooms = factory.Faker('random_int', min=1, max=4)
+    garages = factory.Faker('random_int', min=0, max=2)
+    price = factory.Faker('pydecimal', left_digits=6, right_digits=2)
+    transaction = factory.Faker(
+        'random_element', elements=([t.value for t in TransactionType])
+    )
+    description = factory.Faker('paragraph')
+    address = factory.Faker('street_address')
+    city = factory.Faker('city')
+    state = factory.Faker('state_abbr')
+    status = factory.Faker(
+        'random_element', elements=('Disponível', 'Reservado', 'Vendido')
+    )
 
 
 @pytest.fixture

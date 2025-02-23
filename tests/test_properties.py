@@ -1,6 +1,8 @@
 from http import HTTPStatus
 
-from imoveis_api.schemas import PropertyPublic
+import factory
+
+from tests.conftest import PropertyFactory
 
 
 def test_create_property(client, token):
@@ -40,16 +42,116 @@ def test_create_property(client, token):
     }
 
 
-def test_list_properties(client):
+def test_list_properties_should_return_5(client, session):
+    expected_properties = 5
+    session.bulk_save_objects(PropertyFactory.create_batch(5))
+    session.commit()
+
     response = client.get('/properties')
-    assert response.status_code == HTTPStatus.OK
-    assert response.json() == {'properties': []}
+    assert len(response.json()['properties']) == expected_properties
 
 
-def test_list_properties_with_property(client, property):
-    property_schema = PropertyPublic.model_validate(property).model_dump()
-    response = client.get('/properties/')
-    assert response.json() == {'properties': [property_schema]}
+def test_list_properties_pagination_should_return_2(
+    client,
+    session,
+):
+    expected_properties = 2
+    session.bulk_save_objects(PropertyFactory.create_batch(5))
+    session.commit()
+
+    response = client.get('/properties/?offset=1&limit=2')
+    assert len(response.json()['properties']) == expected_properties
+
+
+def test_list_properties_filter_state_should_return_5(client, session):
+    expected_properties = 5
+    session.bulk_save_objects(PropertyFactory.create_batch(5, state='SP'))
+    session.commit()
+
+    response = client.get(
+        '/properties/?state=SP',
+    )
+    assert len(response.json()['properties']) == expected_properties
+
+
+def test_list_properties_filter_city_should_return_5(client, session):
+    expected_properties = 5
+    session.bulk_save_objects(
+        PropertyFactory.create_batch(5, city='São Paulo')
+    )
+    session.commit()
+
+    response = client.get(
+        '/properties/?city=São Paulo',
+    )
+    assert len(response.json()['properties']) == expected_properties
+
+
+def test_list_properties_filter_transaction_should_return_5(client, session):
+    expected_properties = 5
+    session.bulk_save_objects(
+        PropertyFactory.create_batch(5, transaction='venda')
+    )
+    session.commit()
+
+    response = client.get(
+        '/properties/?transaction=venda',
+    )
+    assert len(response.json()['properties']) == expected_properties
+
+
+def test_list_properties_filter_type_should_return_5(client, session):
+    expected_properties = 5
+    session.bulk_save_objects(
+        PropertyFactory.create_batch(5, type='apartamento')
+    )
+    session.commit()
+
+    response = client.get(
+        '/properties/?type=apartamento',
+    )
+    assert len(response.json()['properties']) == expected_properties
+
+
+def test_list_properties_filter_min_max_price_range_should_return_5(
+    client, session
+):
+    expected_properties = 5
+    # Cria 5 propriedades dentro da faixa de preço
+    in_range_prices = [300000.0, 350000.0, 400000.0, 450000.0, 500000.0]
+    session.bulk_save_objects(
+        PropertyFactory.create_batch(
+            5, price=factory.Iterator(in_range_prices)
+        )
+    )
+    # Cria propriedades fora da faixa para testar o filtro
+    session.bulk_save_objects(
+        PropertyFactory.create_batch(3, price=250000.0),
+        PropertyFactory.create_batch(2, price=550000.0),
+    )
+    session.commit()
+
+    response = client.get('/properties/?min_price=300000&max_price=500000')
+    assert len(response.json()['properties']) == expected_properties
+
+
+def test_list_properties_filter_combined(client, session):
+    expected_properties = 5
+    session.bulk_save_objects(
+        PropertyFactory.create_batch(
+            5,
+            state='RS',
+            city='Imbé',
+            transaction='aluguel',
+            type='apartamento',
+        )
+    )
+    session.commit()
+
+    response = client.get(
+        '/properties/?state=RS&city=Imbé&transaction=aluguel&type=apartamento',
+    )
+    assert len(response.json()['properties']) == expected_properties
 
 
 def test_update_property(client, property, token):
