@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
-from imoveis_api.schemas import UserPublic
 from imoveis_api.security import create_access_token
+from tests.conftest import UserFactory
 
 
 def test_create_user(client):
@@ -111,10 +111,20 @@ def test_read_users(client):
     assert response.json() == {'users': []}
 
 
-def test_read_users_with_user(client, user):
-    user_schema = UserPublic.model_validate(user).model_dump()
+def test_read_users_with_users_should_return_3(client, session):
+    expected_users = 3
+
+    users = UserFactory.create_batch(3)
+    session.add_all(users)
+    session.commit()
+
     response = client.get('/users/')
-    assert response.json() == {'users': [user_schema]}
+    data = response.json()
+
+    assert len(data['users']) == expected_users
+    assert {u['email'] for u in data['users']} == {
+        user.email for user in users
+    }
 
 
 def test_update_user(client, user, token):
