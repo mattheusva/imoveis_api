@@ -24,6 +24,7 @@ services:
 
   imoveis_api:
     image: imoveis_api
+    entrypoint: ./entrypoint.sh
     build: .
     ports:
       - "8000:8000"
