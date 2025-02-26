@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 import factory
+import pytest
 
 from tests.conftest import PropertyFactory
 
@@ -42,31 +43,34 @@ def test_create_property(client, token):
     }
 
 
-def test_list_properties_should_return_5(client, session):
+@pytest.mark.asyncio
+async def test_list_properties_should_return_5(client, session):
     expected_properties = 5
-    session.bulk_save_objects(PropertyFactory.create_batch(5))
-    session.commit()
+    session.add_all(PropertyFactory.create_batch(5))
+    await session.commit()
 
     response = client.get('/properties')
     assert len(response.json()['properties']) == expected_properties
 
 
-def test_list_properties_pagination_should_return_2(
+@pytest.mark.asyncio
+async def test_list_properties_pagination_should_return_2(
     client,
     session,
 ):
     expected_properties = 2
-    session.bulk_save_objects(PropertyFactory.create_batch(5))
-    session.commit()
+    session.add_all(PropertyFactory.create_batch(5))
+    await session.commit()
 
     response = client.get('/properties/?offset=1&limit=2')
     assert len(response.json()['properties']) == expected_properties
 
 
-def test_list_properties_filter_state_should_return_5(client, session):
+@pytest.mark.asyncio
+async def test_list_properties_filter_state_should_return_5(client, session):
     expected_properties = 5
-    session.bulk_save_objects(PropertyFactory.create_batch(5, state='SP'))
-    session.commit()
+    session.add_all(PropertyFactory.create_batch(5, state='SP'))
+    await session.commit()
 
     response = client.get(
         '/properties/?state=SP',
@@ -74,12 +78,11 @@ def test_list_properties_filter_state_should_return_5(client, session):
     assert len(response.json()['properties']) == expected_properties
 
 
-def test_list_properties_filter_city_should_return_5(client, session):
+@pytest.mark.asyncio
+async def test_list_properties_filter_city_should_return_5(client, session):
     expected_properties = 5
-    session.bulk_save_objects(
-        PropertyFactory.create_batch(5, city='São Paulo')
-    )
-    session.commit()
+    session.add_all(PropertyFactory.create_batch(5, city='São Paulo'))
+    await session.commit()
 
     response = client.get(
         '/properties/?city=São Paulo',
@@ -87,12 +90,13 @@ def test_list_properties_filter_city_should_return_5(client, session):
     assert len(response.json()['properties']) == expected_properties
 
 
-def test_list_properties_filter_transaction_should_return_5(client, session):
+@pytest.mark.asyncio
+async def test_list_properties_filter_transaction_should_return_5(
+    client, session
+):
     expected_properties = 5
-    session.bulk_save_objects(
-        PropertyFactory.create_batch(5, transaction='venda')
-    )
-    session.commit()
+    session.add_all(PropertyFactory.create_batch(5, transaction='venda'))
+    await session.commit()
 
     response = client.get(
         '/properties/?transaction=venda',
@@ -100,12 +104,11 @@ def test_list_properties_filter_transaction_should_return_5(client, session):
     assert len(response.json()['properties']) == expected_properties
 
 
-def test_list_properties_filter_type_should_return_5(client, session):
+@pytest.mark.asyncio
+async def test_list_properties_filter_type_should_return_5(client, session):
     expected_properties = 5
-    session.bulk_save_objects(
-        PropertyFactory.create_batch(5, type='apartamento')
-    )
-    session.commit()
+    session.add_all(PropertyFactory.create_batch(5, type='apartamento'))
+    await session.commit()
 
     response = client.get(
         '/properties/?type=apartamento',
@@ -113,31 +116,31 @@ def test_list_properties_filter_type_should_return_5(client, session):
     assert len(response.json()['properties']) == expected_properties
 
 
-def test_list_properties_filter_min_max_price_range_should_return_5(
+@pytest.mark.asyncio
+async def test_list_properties_filter_min_max_price_range_should_return_5(
     client, session
 ):
     expected_properties = 5
     # Cria 5 propriedades dentro da faixa de preço
     in_range_prices = [300000.0, 350000.0, 400000.0, 450000.0, 500000.0]
-    session.bulk_save_objects(
+    session.add_all(
         PropertyFactory.create_batch(
             5, price=factory.Iterator(in_range_prices)
         )
     )
     # Cria propriedades fora da faixa para testar o filtro
-    session.bulk_save_objects(
-        PropertyFactory.create_batch(3, price=250000.0),
-        PropertyFactory.create_batch(2, price=550000.0),
-    )
-    session.commit()
+    session.add_all(PropertyFactory.create_batch(3, price=250000.0))
+    session.add_all(PropertyFactory.create_batch(2, price=550000.0))
+    await session.commit()
 
     response = client.get('/properties/?min_price=300000&max_price=500000')
     assert len(response.json()['properties']) == expected_properties
 
 
-def test_list_properties_filter_combined(client, session):
+@pytest.mark.asyncio
+async def test_list_properties_filter_combined(client, session):
     expected_properties = 5
-    session.bulk_save_objects(
+    session.add_all(
         PropertyFactory.create_batch(
             5,
             state='RS',
@@ -146,7 +149,7 @@ def test_list_properties_filter_combined(client, session):
             type='apartamento',
         )
     )
-    session.commit()
+    await session.commit()
 
     response = client.get(
         '/properties/?state=RS&city=Imbé&transaction=aluguel&type=apartamento',

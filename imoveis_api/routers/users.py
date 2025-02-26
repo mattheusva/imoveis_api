@@ -3,7 +3,7 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from imoveis_api.database import get_session
 from imoveis_api.models import User
@@ -18,8 +18,10 @@ router = APIRouter(prefix='/users', tags=['users'])
 
 # Endpoint para criar user
 @router.post('/', status_code=HTTPStatus.CREATED, response_model=UserPublic)
-def create_user(user: UserSchema, session: Session = Depends(get_session)):
-    db_user = session.scalar(
+async def create_user(
+    user: UserSchema, session: AsyncSession = Depends(get_session)
+):
+    db_user = await session.scalar(
         select(User).where(
             (User.username == user.username) | (User.email == user.email)
         )
@@ -47,27 +49,31 @@ def create_user(user: UserSchema, session: Session = Depends(get_session)):
         CRECI=user.CRECI,
     )
     session.add(db_user)
-    session.commit()
-    session.refresh(db_user)
+    await session.commit()
+    await session.refresh(db_user)
 
     return db_user
 
 
 # Endpoint para ler users
 @router.get('/', response_model=UserList)
-def read_users(
-    skip: int = 0, limit: int = 100, session: Session = Depends(get_session)
+async def read_users(
+    skip: int = 0,
+    limit: int = 100,
+    session: AsyncSession = Depends(get_session),
 ):
-    users = session.scalars(select(User).offset(skip).limit(limit)).all()
+    result = await session.scalars(select(User).offset(skip).limit(limit))
+    users = result.all()
+
     return {'users': users}
 
 
 # Endpoint para atualizar user
 @router.put('/{user_id}', response_model=UserPublic)
-def update_user(
+async def update_user(
     user_id: int,
     user: UserSchema,
-    session: Session = Depends(get_session),
+    session: AsyncSession = Depends(get_session),
     current_user: User = Depends(get_current_user),
 ):
     if current_user.id != user_id:
@@ -81,8 +87,8 @@ def update_user(
         current_user.email = user.email
         current_user.phone = user.phone
         current_user.CRECI = user.CRECI
-        session.commit()
-        session.refresh(current_user)
+        await session.commit()
+        await session.refresh(current_user)
 
         return current_user
 
@@ -95,9 +101,9 @@ def update_user(
 
 # Endpoint para deletar user
 @router.delete('/{user_id}', response_model=Message)
-def delete_user(
+async def delete_user(
     user_id: int,
-    session: Session = Depends(get_session),
+    session: AsyncSession = Depends(get_session),
     current_user: User = Depends(get_current_user),
 ):
     if current_user.id != user_id:
@@ -105,7 +111,7 @@ def delete_user(
             status_code=HTTPStatus.FORBIDDEN, detail='Not enough permissions'
         )
 
-    session.delete(current_user)
-    session.commit()
+    await session.delete(current_user)
+    await session.commit()
 
     return {'message': 'User deleted'}

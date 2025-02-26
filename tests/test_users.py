@@ -1,5 +1,7 @@
 from http import HTTPStatus
 
+import pytest
+
 from imoveis_api.security import create_access_token
 from tests.conftest import UserFactory
 
@@ -105,18 +107,20 @@ def test_create_user_should_return_400_email_exists(client, user):
     assert response.json() == {'detail': 'Email already exists'}
 
 
-def test_read_users(client):
+@pytest.mark.asyncio
+async def test_read_users(client):
     response = client.get('/users/')
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'users': []}
 
 
-def test_read_users_with_users_should_return_3(client, session):
+@pytest.mark.asyncio
+async def test_read_users_with_users_should_return_3(client, session):
     expected_users = 3
 
     users = UserFactory.create_batch(3)
     session.add_all(users)
-    session.commit()
+    await session.commit()
 
     response = client.get('/users/')
     data = response.json()
