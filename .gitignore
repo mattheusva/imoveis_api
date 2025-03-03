@@ -133,3 +133,5 @@ cython_debug/
 .coverage
 
 imoveis_api/.coverage
+
+secrets.txt
